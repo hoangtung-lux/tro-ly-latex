@@ -11,9 +11,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`==========================================`);
-  console.log(`🚀 LaTeX Helper Server is running!`);
-  console.log(`🔗 Local: http://localhost:${PORT}`);
-  console.log(`==========================================`);
-});
+// Dành cho Vercel Serverless Function
+module.exports = app;
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`==========================================`);
+    console.log(`🚀 LaTeX Helper Server is running!`);
+    console.log(`🔗 Local: http://localhost:${PORT}`);
+    console.log(`==========================================`);
+  });
+}
