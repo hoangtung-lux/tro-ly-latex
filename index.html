@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaTeX Helper – Trợ lý soạn thảo LaTeX</title>
+  <meta name="description" content="Công cụ hỗ trợ soạn thảo LaTeX với gợi ý thông minh và bách khoa lệnh đầy đủ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-icon">Lx</div>
+    <div>
+      <div class="logo-text">LaTeX Helper</div>
+      <div class="logo-sub">Trợ lý soạn thảo LaTeX</div>
+    </div>
+  </div>
+  <div class="header-badge">Gõ \ để xem gợi ý</div>
+</header>
+
+<nav class="tabs-bar">
+  <button class="tab-btn active" data-tab="tab-editor" id="btn-tab-editor">
+    Editor
+  </button>
+  <button class="tab-btn" data-tab="tab-encyclopedia" id="btn-tab-encyclopedia">
+    Bách khoa lệnh
+  </button>
+  <button class="tab-btn" data-tab="tab-converter" id="btn-tab-converter">
+    Chuyển đổi
+  </button>
+  <button class="tab-btn" data-tab="tab-table" id="btn-tab-table">
+    Tạo Bảng
+  </button>
+  <button class="tab-btn" data-tab="tab-tips" id="btn-tab-tips">
+    Mẹo LaTeX
+  </button>
+</nav>
+
+<!-- ── Body ── -->
+<main class="app-body">
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  Tab 1 – Editor + Preview   ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="tab-panel active" id="tab-editor">
+    <div class="editor-layout">
+
+      <!-- Left: editor -->
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Code LaTeX</span>
+          <div class="pane-actions">
+            <button class="btn" id="btn-template" title="Đặt lại template">Template</button>
+            <button class="btn" id="btn-clear" title="Xoá hết">Xoá</button>
+            <button class="btn btn-primary" id="btn-export">Xuất file .tex</button>
+            <button class="btn btn-primary" id="btn-copy">Sao chép</button>
+          </div>
+        </div>
+        <textarea
+          id="latex-editor"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          placeholder="Bắt đầu gõ LaTeX tại đây... Gõ \ để xem gợi ý lệnh"
+        ></textarea>
+        <div class="status-bar" id="status-line">0 dòng · 0 từ · 0 ký tự</div>
+      </div>
+
+      <!-- Right: preview -->
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Preview (Highlight cú pháp)</span>
+          <span style="font-size:0.72rem;color:var(--text3);">
+            Màu xanh = lệnh · Xanh lá = đối số · Xám = ghi chú
+          </span>
+        </div>
+        <div id="preview-output"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  Tab 2 – Encyclopedia           ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="tab-panel" id="tab-encyclopedia">
+    <div class="enc-toolbar">
+      <input
+        type="text"
+        id="enc-search"
+        placeholder="Tìm lệnh LaTeX... (vd: frac, bảng, hình ảnh)"
+      >
+      <select id="enc-category">
+        <option value="">Tất cả danh mục</option>
+      </select>
+    </div>
+    <div id="enc-list">
+      <!-- Filled by encyclopedia.js -->
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  Tab 3 – Converter              ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="tab-panel" id="tab-converter">
+    <div class="converter-layout">
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Nhập bài toán (Tiếng Việt / Ngôn ngữ tự nhiên)</span>
+          <button class="btn btn-primary" id="btn-convert-action">Chuyển sang LaTeX</button>
+        </div>
+        <textarea 
+          id="converter-input" 
+          placeholder="Ví dụ: &#10;• phân số 1 trên 2 &#10;• căn bậc hai của x cộng y mũ 2 &#10;• tích phân từ 0 đến vô cùng"
+        ></textarea>
+      </div>
+
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Kết quả LaTeX</span>
+          <button class="btn btn-primary" id="btn-converter-insert">Chèn vào Editor</button>
+        </div>
+        <textarea id="converter-output" readonly placeholder="Kết quả sẽ hiện ở đây..."></textarea>
+        <div id="converter-info"></div>
+        <div class="status-bar">Mẹo: Nhấn Ctrl + Enter để chuyển đổi nhanh</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  Tab 4 – Table Builder          ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="tab-panel" id="tab-table">
+    <div class="table-builder-container">
+      <div class="tb-toolbar">
+        <div class="tb-control">
+          <label>Hàng:</label>
+          <input type="number" id="tb-rows" value="3" min="1" max="20">
+        </div>
+        <div class="tb-control">
+          <label>Cột:</label>
+          <input type="number" id="tb-cols" value="3" min="1" max="10">
+        </div>
+        <div class="tb-control checkbox">
+          <input type="checkbox" id="tb-border" checked>
+          <label for="tb-border">Kẻ bảng (Borders)</label>
+        </div>
+        <div class="tb-control checkbox">
+          <input type="checkbox" id="tb-center" checked>
+          <label for="tb-center">Căn giữa</label>
+        </div>
+        <button class="btn btn-primary" id="btn-tb-generate">Tạo code LaTeX</button>
+        <button class="btn btn-primary" id="btn-tb-insert">Chèn vào Editor</button>
+      </div>
+      
+      <div class="tb-grid-wrapper">
+        <table id="tb-grid"></table>
+      </div>
+
+      <div class="tb-output-wrapper">
+        <div class="pane-header">
+          <span class="pane-title">Code Bảng LaTeX</span>
+        </div>
+        <textarea id="tb-output" readonly placeholder="Mã nguồn bảng sẽ hiện ở đây..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  Tab 4 – Tips                   ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="tab-panel" id="tab-tips">
+    <div class="tips-grid">
+
+      <div class="tip-card">
+        <div class="tip-title">Gõ \ để xem gợi ý</div>
+        <div class="tip-body">
+          Trong editor, bắt đầu gõ bất kỳ lệnh nào bằng dấu <span class="tip-code">\</span> để xem danh sách gợi ý. Nhấn <span class="tip-code">↑ ↓</span> để chọn, <span class="tip-code">Tab</span> hoặc <span class="tip-code">Enter</span> để chèn.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Chế độ toán học</div>
+        <div class="tip-body">
+          Dùng <span class="tip-code">$...$</span> cho toán học trên cùng dòng.<br>
+          Dùng <span class="tip-code">$$...$$</span> hoặc môi trường <span class="tip-code">\begin{equation}</span> cho toán học trên dòng riêng.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Tự động lưu</div>
+        <div class="tip-body">
+          App tự động lưu draft của bạn vào trình duyệt sau mỗi lần gõ. Đóng cửa sổ rồi mở lại sẽ vẫn còn nội dung cũ.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Copy từ Bách khoa</div>
+        <div class="tip-body">
+          Trong tab <strong>Bách khoa lệnh</strong>, mỗi lệnh có nút [Sao chép] để sao chép cú pháp và nút [Chèn] để dán thẳng vào editor.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Gói lệnh hay dùng</div>
+        <div class="tip-body">
+          <span class="tip-code">amsmath</span> – công thức toán<br>
+          <span class="tip-code">graphicx</span> – chèn hình ảnh<br>
+          <span class="tip-code">xcolor</span> – màu sắc<br>
+          <span class="tip-code">hyperref</span> – siêu liên kết<br>
+          <span class="tip-code">geometry</span> – căn lề trang
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Phân số và lũy thừa</div>
+        <div class="tip-body">
+          Phân số: <span class="tip-code">\frac{a}{b}</span><br>
+          Lũy thừa: <span class="tip-code">x^{n}</span><br>
+          Chỉ số dưới: <span class="tip-code">x_{i}</span><br>
+          Căn: <span class="tip-code">\sqrt{x}</span>, <span class="tip-code">\sqrt[3]{x}</span>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Cấu trúc tài liệu cơ bản</div>
+        <div class="tip-body">
+          Mỗi file .tex cần có <span class="tip-code">\documentclass</span> ở đầu, rồi đến <span class="tip-code">\begin{document}</span> ... <span class="tip-code">\end{document}</span>. Nội dung chính nằm giữa hai dòng này.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Viết ghi chú trong code</div>
+        <div class="tip-body">
+          Mọi thứ sau dấu <span class="tip-code">%</span> đến cuối dòng là ghi chú, LaTeX sẽ bỏ qua khi biên dịch. Rất hữu ích để ghi chú nhắc nhở.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Tiếng Việt trong LaTeX</div>
+        <div class="tip-body">
+          Thêm vào preamble:<br>
+          <span class="tip-code">\usepackage[utf8]{inputenc}</span><br>
+          <span class="tip-code">\usepackage[vietnamese]{babel}</span><br>
+          Hoặc dùng <strong>XeLaTeX/LuaLaTeX</strong> với <span class="tip-code">fontspec</span>.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Căn lề trang</div>
+        <div class="tip-body">
+          <span class="tip-code">\usepackage{geometry}</span><br>
+          <span class="tip-code">\geometry{a4paper, margin=2.5cm}</span><br>
+          Hoặc tuỳ chỉnh: <span class="tip-code">top=2cm, bottom=2cm, left=3cm, right=2cm</span>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Biên dịch online</div>
+        <div class="tip-body">
+          Sau khi soạn xong, sao chép code và dán vào:<br>
+          • <strong>Overleaf.com</strong> (miễn phí, dễ dùng nhất)<br>
+          • <strong>LaTeX.Online</strong><br>
+          để xem PDF kết quả.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Vẽ hình với TikZ</div>
+        <div class="tip-body">
+          Sử dụng môi trường <span class="tip-code">\begin{tikzpicture}</span> để vẽ hình. Bạn có thể dùng tab <strong>Chuyển đổi</strong> để gõ "vẽ đường tròn...", app sẽ tự tạo code TikZ cho bạn.
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">Phím tắt hữu ích</div>
+        <div class="tip-body">
+          <span class="tip-code">Tab</span> – thụt lề 2 khoảng trắng<br>
+          <span class="tip-code">\ + gõ</span> – hiện gợi ý lệnh<br>
+          <span class="tip-code">Esc</span> – đóng gợi ý<br>
+          <span class="tip-code">Ctrl+A</span> – chọn tất cả để copy
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Autocomplete dropdown ── -->
+<div id="ac-dropdown" role="listbox" aria-label="Gợi ý lệnh LaTeX"></div>
+
+<!-- ── Scripts ── -->
+<script src="js/autocomplete.js"></script>
+<script src="js/encyclopedia.js"></script>
+<script src="js/converter.js"></script>
+<script src="js/table-builder.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

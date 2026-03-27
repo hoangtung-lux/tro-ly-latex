@@ -1,0 +1,12 @@
+{
+  "name": "latex-helper-server",
+  "version": "1.0.0",
+  "description": "Server-side hosting for LaTeX Helper App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
