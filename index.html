@@ -13,152 +13,308 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="styles/style.css">
+    <style>
+        /* --- Reset & Variables --- */
+        :root {
+            --bg-main: #0f172a;
+            --bg-side: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #7dd3fc;
+            --border: #334155;
+            --paper-bg: #ffffff;
+            --paper-text: #1a1a1a;
+            --success: #22c55e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Layout --- */
+        .main-header {
+            background-color: var(--bg-side);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .main-nav { display: flex; gap: 0.5rem; }
+        .nav-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; transition: 0.2s;
+        }
+        .nav-btn.active { background: var(--accent); color: white; }
+        
+        .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
+        .tab-content { display: none; height: 100%; }
+        .tab-content.active { display: block; }
+
+        .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; height: 100%; }
+        .editor-pane, .preview-pane {
+            display: flex; flex-direction: column; background: var(--bg-side);
+            border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+        }
+        .pane-header {
+            padding: 0.75rem 1rem; background: rgba(0,0,0,0.2);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .actions { display: flex; gap: 0.5rem; }
+        .actions button {
+            background: var(--bg-main); border: 1px solid var(--border); color: white;
+            padding: 0.35rem 0.7rem; font-size: 0.85rem; cursor: pointer; border-radius: 4px;
+        }
+        .actions button:hover { border-color: var(--accent); }
+
+        #latex-input {
+            width: 100%; height: 100%; background: transparent; border: none;
+            color: #e2e8f0; padding: 1rem; font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem; line-height: 1.6; resize: none; outline: none;
+        }
+        .paper-view {
+            flex: 1; background: var(--paper-bg); color: var(--paper-text);
+            padding: 2.5rem; overflow-y: auto; font-family: 'EB Garamond', serif;
+            font-size: 1.25rem; line-height: 1.5;
+        }
+        
+        /* --- Modules --- */
+        .autocomplete-items {
+            position: absolute; border: 1px solid var(--border); background: var(--bg-side);
+            z-index: 99; bottom: 40px; left: 10px; width: 250px; border-radius: 4px;
+        }
+        .autocomplete-item { padding: 8px 12px; cursor: pointer; }
+        .autocomplete-item:hover, .autocomplete-active { background: var(--accent); }
+
+        .encyclopedia-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem; margin-top: 1.5rem;
+        }
+        .ency-card { background: var(--bg-side); border: 1px solid var(--border); padding: 1.25rem; border-radius: 8px; }
+        .ency-card code { display: block; background: #000; padding: 0.5rem; color: #fbbf24; margin: 0.5rem 0; border-radius: 4px; }
+        
+        .converter-container, .table-builder-container { max-width: 900px; margin: 0 auto; background: var(--bg-side); padding: 2rem; border-radius: 10px; }
+        .primary-btn { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; }
+        .output-with-btn { display: flex; gap: 1rem; margin-top: 0.5rem; }
+        .output-with-btn button { background: var(--success); color: white; border: none; padding: 0 1rem; border-radius: 6px; cursor: pointer; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white;
+            padding: 0.75rem 1.5rem; border-radius: 6px; transform: translateY(100px); transition: 0.3s;
+        }
+        .toast-show { transform: translateY(0); }
+    </style>
 </head>
 <body>
     <header class="main-header">
         <div class="logo-area">
             <h1>LaTeX Helper</h1>
-            <p>Trợ lý soạn thảo LaTeX dành cho giáo viên</p>
+            <p>Trợ lý soạn thảo LaTeX (Bản Ổn định Dành cho Mẹ)</p>
         </div>
         <nav class="main-nav">
             <button class="nav-btn active" data-tab="editor">Editor</button>
             <button class="nav-btn" data-tab="encyclopedia">Bách khoa lệnh</button>
             <button class="nav-btn" data-tab="converter">Chuyển đổi</button>
             <button class="nav-btn" data-tab="table-builder">Tạo Bảng</button>
-            <button class="nav-btn" data-tab="tips">Mẹo LaTeX</button>
         </nav>
     </header>
 
     <main class="content-area">
-        <!-- Tab: Editor -->
         <section id="tab-editor" class="tab-content active">
             <div class="editor-layout">
                 <div class="editor-pane">
                     <div class="pane-header">
                         <h2>Code LaTeX</h2>
                         <div class="actions">
-                            <button id="btn-template">Template</button>
-                            <button id="btn-clear">Xoá</button>
                             <button id="btn-export">Xuất file .tex</button>
                             <button id="btn-copy">Sao chép</button>
+                            <button id="btn-clear">Xoá</button>
                         </div>
                     </div>
                     <div class="editor-wrapper">
-                        <textarea id="latex-input" spellcheck="false" placeholder="Bắt đầu gõ LaTeX tại đây... Gõ \ để xem gợi ý"></textarea>
+                        <textarea id="latex-input" spellcheck="false" placeholder="Gõ LaTeX tại đây... (Gõ \ để gợi ý)"></textarea>
                         <div id="autocomplete-list" class="autocomplete-items"></div>
-                    </div>
-                    <div class="editor-status">
-                        <span id="char-count">0 dòng · 0 từ · 0 ký tự</span>
                     </div>
                 </div>
                 <div class="preview-pane">
-                    <div class="pane-header">
-                        <h2>Xem trước (Chuyên nghiệp)</h2>
-                    </div>
-                    <div id="latex-preview" class="paper-view">
-                        <div class="preview-placeholder">Kết quả sẽ hiện ở đây...</div>
-                    </div>
+                    <div class="pane-header"><h2>Xem trước Chuyên nghiệp</h2></div>
+                    <div id="latex-preview" class="paper-view"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Tab: Encyclopedia -->
         <section id="tab-encyclopedia" class="tab-content">
             <div class="search-bar">
-                <input type="text" id="encyclopedia-search" placeholder="Tìm lệnh LaTeX... (vd: frac, sqrt, matrix)">
-                <select id="category-filter">
-                    <option value="all">Tất cả danh mục</option>
-                    <option value="math">Toán học cơ bản</option>
-                    <option value="symbol">Ký hiệu đặc biệt</option>
-                    <option value="geometry">Hình học (TikZ)</option>
-                    <option value="format">Định dạng văn bản</option>
-                </select>
+                <input type="text" id="encyclopedia-search" placeholder="Tìm lệnh LaTeX..." style="width:100%; padding: 0.75rem; background: var(--bg-main); color:white; border: 1px solid var(--border);">
             </div>
             <div id="encyclopedia-results" class="encyclopedia-grid"></div>
         </section>
 
-        <!-- Tab: Converter -->
         <section id="tab-converter" class="tab-content">
             <div class="converter-container">
-                <div class="converter-input-area">
-                    <label>Nhập bài toán (Tiếng Việt / Ngôn ngữ tự nhiên):</label>
-                    <textarea id="conv-input" placeholder="Ví dụ: 
-* phân số 1 trên 2
-* căn bậc hai của x
-* vẽ đường tròn tâm (0,0) bán kính 2"></textarea>
-                    <button id="btn-convert" class="primary-btn">Chuyển sang LaTeX</button>
-                </div>
-                <div class="converter-output-area">
-                    <label>Kết quả LaTeX:</label>
-                    <div class="output-with-btn">
-                        <textarea id="conv-output" readonly></textarea>
-                        <button id="btn-conv-insert">Chèn vào Editor</button>
-                    </div>
-                    <div id="conv-info" class="conv-info-box">
-                        Gõ một câu tiếng Việt và nhấn Chuyển đổi để xem kết quả nhé!
-                    </div>
+                <textarea id="conv-input" placeholder="Ví dụ: phân số 1 trên 2..."></textarea>
+                <button id="btn-convert" class="primary-btn">Chuyển đổi</button>
+                <div class="output-with-btn">
+                    <textarea id="conv-output" readonly></textarea>
+                    <button id="btn-conv-insert">Chèn</button>
                 </div>
             </div>
         </section>
 
-        <!-- Tab: Table Builder -->
         <section id="tab-table-builder" class="tab-content">
             <div class="table-builder-container">
-                <div class="table-config">
-                    <div class="config-row">
-                        <label>Hàng:</label>
-                        <input type="number" id="table-rows" value="3" min="1" max="10">
-                        <label>Cột:</label>
-                        <input type="number" id="table-cols" value="3" min="1" max="10">
-                    </div>
-                    <div class="config-row">
-                        <label><input type="checkbox" id="table-border" checked> Kẻ bảng (Borders)</label>
-                        <label><input type="checkbox" id="table-center" checked> Căn giữa</label>
-                    </div>
-                    <button id="btn-generate-table" class="primary-btn">Tạo code LaTeX</button>
+                <div style="display:flex; gap: 1rem; margin-bottom: 1rem;">
+                    Hàng: <input type="number" id="table-rows" value="3" style="width:50px">
+                    Cột: <input type="number" id="table-cols" value="3" style="width:50px">
                 </div>
-                <div id="table-grid-wrapper" class="table-grid-wrapper">
-                    <!-- Grid will be generated here -->
-                </div>
-                <div class="table-output">
-                    <label>Mã nguồn bảng LaTeX:</label>
-                    <div class="output-with-btn">
-                        <textarea id="table-output-code" readonly></textarea>
-                        <button id="btn-table-insert">Chèn vào Editor</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tab: Tips -->
-        <section id="tab-tips" class="tab-content">
-            <div class="tips-container">
-                <div class="tip-card">
-                    <h3>Gợi ý thông minh</h3>
-                    <p>Trong editor, bắt đầu gõ bất kỳ lệnh nào bằng dấu <code>\</code> để xem danh sách gợi ý. Nhấn ↑ ↓ để chọn, Tab hoặc Enter để chèn.</p>
-                </div>
-                <div class="tip-card">
-                    <h3>Chế độ toán học</h3>
-                    <p>Dùng <code>$...$</code> cho toán học trên cùng dòng.</p>
-                    <p>Dùng <code>$$...$$</code> hoặc môi trường <code>\begin{equation}</code> cho toán học trên dòng riêng.</p>
-                </div>
-                <div class="tip-card">
-                    <h3>Tự động lưu</h3>
-                    <p>App tự động lưu nháp của bạn vào trình duyệt sau mỗi lần gõ. Đóng cửa sổ rồi mở lại sẽ vẫn còn nội dung cũ.</p>
-                </div>
-                <div class="tip-card">
-                    <h3>Copy từ Bách khoa</h3>
-                    <p>Trong tab <strong>Bách khoa lệnh</strong>, mỗi lệnh có nút [Sao chép] để sao chép cú pháp và nút [Chèn] để dán thẳng vào editor.</p>
+                <div id="table-grid-wrapper" style="overflow-x:auto; margin-bottom: 1rem;"></div>
+                <button id="btn-generate-table" class="primary-btn">Tạo Bảng</button>
+                <div class="output-with-btn">
+                    <textarea id="table-output-code" readonly></textarea>
+                    <button id="btn-table-insert">Chèn</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <script src="scripts/app.js"></script>
-    <script src="scripts/autocomplete.js"></script>
-    <script src="scripts/encyclopedia.js"></script>
-    <script src="scripts/converter.js"></script>
-    <script src="scripts/table-builder.js"></script>
+    <script>
+        // --- Commands Data ---
+        const COMMANDS = [
+            { name: "Phân số", cmd: "\\frac{a}{b}", desc: "Tạo phân số", category: "math" },
+            { name: "Căn bậc hai", cmd: "\\sqrt{x}", desc: "Căn bậc hai", category: "math" },
+            { name: "Lũy thừa", cmd: "x^{n}", desc: "Mũ n", category: "math" },
+            { name: "Hệ tọa độ Oxy", cmd: "\\begin{tikzpicture}\n\\draw[->] (-1,0) -- (4,0);\n\\draw[->] (0,-1) -- (0,4);\n\\end{tikzpicture}", desc: "Mẫu vẽ Oxy", category: "geometry" }
+        ];
+
+        // --- Main Controller ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById("latex-input");
+            const preview = document.getElementById("latex-preview");
+            
+            // Tab Switch
+            document.querySelectorAll(".nav-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".nav-btn, .tab-content").forEach(el => el.classList.remove("active"));
+                    btn.classList.add("active");
+                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+                });
+            });
+
+            // Live Render
+            input.addEventListener("input", () => {
+                preview.innerHTML = input.value;
+                if (window.renderMathInElement) {
+                    renderMathInElement(preview, {
+                        delimiters: [{left:'$$', right:'$$', display:true}, {left:'$', right:'$', display:false}],
+                        throwOnError: false
+                    });
+                }
+                localStorage.setItem("latex_draft", input.value);
+            });
+
+            // Autocomplete
+            const autoList = document.getElementById("autocomplete-list");
+            const suggs = ["\\frac{}{}", "\\sqrt{}", "\\alpha", "\\beta", "\\sum", "\\int"];
+            input.addEventListener("input", () => {
+                const val = input.value;
+                const lastSlash = val.lastIndexOf("\\");
+                autoList.innerHTML = "";
+                if (lastSlash === -1) return;
+                const query = val.substring(lastSlash).split(/\s/)[0];
+                suggs.filter(s => s.startsWith(query)).forEach(s => {
+                    const div = document.createElement("div");
+                    div.className = "autocomplete-item";
+                    div.textContent = s;
+                    div.onclick = () => {
+                        input.value = val.substring(0, lastSlash) + s + val.substring(lastSlash + query.length);
+                        autoList.innerHTML = "";
+                        input.dispatchEvent(new Event("input"));
+                    };
+                    autoList.appendChild(div);
+                });
+            });
+
+            // Converter Logic (Pure Client-side)
+            document.getElementById("btn-convert").onclick = () => {
+                let text = document.getElementById("conv-input").value;
+                const rules = [
+                    { pattern: /phân số\s+(.+)\s+trên\s+(.+)/gi, replace: "\\frac{$1}{$2}" },
+                    { pattern: /căn bậc hai\s*(?:của)?\s*(.+)/gi, replace: "\\sqrt{$1}" }
+                ];
+                rules.forEach(r => text = text.replace(r.pattern, r.replace));
+                document.getElementById("conv-output").value = `$ ${text} $`;
+            };
+
+            // Table Builder Logic
+            const makeGrid = () => {
+                const r = document.getElementById("table-rows").value;
+                const c = document.getElementById("table-cols").value;
+                let html = '<table style="border-collapse:collapse">';
+                for(let i=0; i<r; i++) {
+                    html += '<tr>';
+                    for(let j=0; j<c; j++) html += `<td><input type="text" data-r="${i}" data-c="${j}" style="width:60px; background:#000; color:white; border:1px solid #333; padding:4px"></td>`;
+                    html += '</tr>';
+                }
+                document.getElementById("table-grid-wrapper").innerHTML = html + '</table>';
+            };
+            document.getElementById("table-rows").oninput = makeGrid;
+            document.getElementById("table-cols").oninput = makeGrid;
+            document.getElementById("btn-generate-table").onclick = () => {
+                const r = document.getElementById("table-rows").value;
+                const c = document.getElementById("table-cols").value;
+                let code = `\\begin{tabular}{${"|c".repeat(c)}|}\n\\hline\n`;
+                for(let i=0; i<r; i++) {
+                    let cells = [];
+                    for(let j=0; j<c; j++) cells.push(document.querySelector(`input[data-r="${i}"][data-c="${j}"]`).value || "");
+                    code += cells.join(" & ") + " \\\\ \\hline\n";
+                }
+                document.getElementById("table-output-code").value = code + "\\end{tabular}";
+            };
+
+            // Encyclopedia
+            const renderEncy = (data) => {
+                const res = document.getElementById("encyclopedia-results");
+                res.innerHTML = "";
+                data.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "ency-card";
+                    card.innerHTML = `<h4>${item.name}</h4><code>${item.cmd}</code><button onclick="window.insertToEditor('${item.cmd}')" style="width:100%; cursor:pointer">Chèn</button>`;
+                    res.appendChild(card);
+                });
+            };
+            renderEncy(COMMANDS);
+            document.getElementById("encyclopedia-search").oninput = (e) => {
+                renderEncy(COMMANDS.filter(c => c.name.toLowerCase().includes(e.target.value.toLowerCase())));
+            };
+
+            window.insertToEditor = (t) => {
+                const s = input.selectionStart;
+                input.value = input.value.substring(0, s) + t + input.value.substring(input.selectionEnd);
+                input.dispatchEvent(new Event("input"));
+                toast("Đã chèn!");
+            };
+
+            function toast(m) {
+                const t = document.createElement("div");
+                t.className = "toast"; t.textContent = m;
+                document.body.appendChild(t);
+                setTimeout(() => t.classList.add("toast-show"), 10);
+                setTimeout(() => { t.classList.remove("toast-show"); setTimeout(() => t.remove(), 300); }, 2000);
+            }
+
+            // Load Draft
+            const saved = localStorage.getItem("latex_draft");
+            if (saved) { input.value = saved; input.dispatchEvent(new Event("input")); }
+            makeGrid();
+        });
+    </script>
 </body>
 </html>
