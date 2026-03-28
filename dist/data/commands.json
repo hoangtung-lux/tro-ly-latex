@@ -1,0 +1,10 @@
+[
+    { "name": "Phân số", "cmd": "\\frac{a}{b}", "desc": "Tạo phân số với tử a và mẫu b.", "category": "math" },
+    { "name": "Căn bậc hai", "cmd": "\\sqrt{x}", "desc": "Căn bậc hai của x.", "category": "math" },
+    { "name": "Lũy thừa", "cmd": "x^{n}", "desc": "x mũ n.", "category": "math" },
+    { "name": "Tích phân", "cmd": "\\int_{a}^{b} f(x) dx", "desc": "Tích phân xác định.", "category": "math" },
+    { "name": "Hệ trục tọa độ (Oxy)", "cmd": "\\begin{tikzpicture}\n[scale=1,>=stealth]\n\\draw[->] (-1,0) -- (4,0) node[below] {$x$};\n\\draw[->] (0,-1) -- (0,4) node[left] {$y$};\n\\node at (0,0) [below left] {$O$};\n\\end{tikzpicture}", "desc": "Mẫu vẽ hệ trục tọa độ Oxy dùng TikZ.", "category": "geometry" },
+    { "name": "Vẽ đường tròn", "cmd": "\\draw (0,0) circle (2cm);", "desc": "Vẽ hình tròn tâm (0,0) bán kính 2cm.", "category": "geometry" },
+    { "name": "Vẽ tam giác", "cmd": "\\draw (0,0) -- (2,0) -- (1,2) -- cycle;", "desc": "Vẽ tam giác bằng các đỉnh.", "category": "geometry" },
+    { "name": "Môi trường Equation", "cmd": "\\begin{equation}\n  E = mc^2\n\\end{equation}", "desc": "Môi trường gõ công thức toán có đánh số hiệu.", "category": "format" }
+]

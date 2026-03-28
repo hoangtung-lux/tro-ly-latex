@@ -3,6 +3,6 @@
   "version": "1.2.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p .vercel/output/static && cp index.html .vercel/output/static/index.html && echo 'Build complete'"
+    "build": "mkdir -p dist && cp index.html dist/index.html && cp -r styles dist/ && cp -r scripts dist/ && cp -r data dist/ && echo 'Build complete'"
   }
 }
