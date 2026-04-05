@@ -1,45 +1,112 @@
 /**
- * Main App Controller
+ * LaTeX Helper - Main Controller (Refactored for Clean Code)
  */
 
-document.addEventListener("DOMContentLoaded", () => {
-    // ── Tab Management ──
-    const navBtns = document.querySelectorAll(".nav-btn");
-    const tabs = document.querySelectorAll(".tab-content");
+const App = {
+    // --- Configuration & Data ---
+    COMMANDS: [
+        { name: "Phân số", cmd: "\\frac{a}{b}", desc: "Tạo phân số", category: "Toán học" },
+        { name: "Căn bậc hai", cmd: "\\sqrt{x}", desc: "Căn bậc hai", category: "Toán học" },
+        { name: "Lũy thừa", cmd: "x^{n}", desc: "Mũ n", category: "Toán học" },
+        { name: "Tổng (Sigma)", cmd: "\\sum_{i=1}^{n}", desc: "Ký hiệu tổng", category: "Toán học" },
+        { name: "Tích phân", cmd: "\\int_{a}^{b} f(x) dx", desc: "Tích phân", category: "Toán học" },
+        { name: "Hệ tọa độ Oxy", cmd: "\\begin{tikzpicture}\n\\draw[->] (-1,0) -- (4,0) node[right] {$x$};\n\\draw[->] (0,-1) -- (0,4) node[above] {$y$};\n\\draw[step=1,gray!20,very thin] (-0.9,-0.9) grid (3.9,3.9);\n\\end{tikzpicture}", desc: "Mẫu vẽ Oxy chuyên nghiệp", category: "Hình học" },
+        { name: "Tam giác ABC", cmd: "\\begin{tikzpicture}\n\\coordinate (A) at (0,3);\n\\coordinate (B) at (-2,0);\n\\coordinate (C) at (2,0);\n\\draw (A) -- (B) -- (C) -- cycle;\n\\node[above] at (A) {A};\n\\node[left] at (B) {B};\n\\node[right] at (C) {C};\n\\end{tikzpicture}", desc: "Vẽ tam giác cơ bản", category: "Hình học" }
+    ],
 
-    navBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const target = btn.dataset.tab;
-            navBtns.forEach(b => b.classList.remove("active"));
-            tabs.forEach(t => t.classList.remove("active"));
-            btn.classList.add("active");
-            document.getElementById(`tab-${target}`).classList.add("active");
+    SUGGESTIONS: ["\\frac{}{}", "\\sqrt{}", "\\alpha", "\\beta", "\\gamma", "\\delta", "\\sum", "\\int", "\\infty", "\\text{}", "\\begin{enumerate}", "\\item", "\\begin{tikzpicture}"],
+
+    // --- Core Methods ---
+    init() {
+        this.cacheDOM();
+        this.bindEvents();
+        this.loadDraft();
+        this.initExternalModules();
+        this.renderEncy(this.COMMANDS);
+        this.makeGrid();
+    },
+
+    cacheDOM() {
+        this.input = document.getElementById("latex-input");
+        this.preview = document.getElementById("latex-preview");
+        this.autoList = document.getElementById("autocomplete-list");
+        this.encySearch = document.getElementById("encyclopedia-search");
+        this.rowsInput = document.getElementById("table-rows");
+        this.colsInput = document.getElementById("table-cols");
+    },
+
+    bindEvents() {
+        // Tab Navigation
+        document.querySelectorAll("[data-tab]").forEach(el => {
+            el.addEventListener("click", () => this.switchTab(el.dataset.tab));
         });
-    });
 
-    // ── Editor Logic ──
-    const input = document.getElementById("latex-input");
-    const preview = document.getElementById("latex-preview");
-    const charCount = document.getElementById("char-count");
-
-    // Live Render
-    input.addEventListener("input", () => {
-        renderPreview();
-        updateStatus();
-        saveDraft();
-    });
-
-    function renderPreview() {
-        const text = input.value.trim();
-        if (!text) {
-            preview.innerHTML = '<div class="preview-placeholder">Kết quả sẽ hiện ở đây...</div>';
-            return;
+        // Editor Logic
+        if (this.input) {
+            this.input.addEventListener("input", () => this.handleInput());
         }
 
-        try {
-            // Render KaTeX
-            preview.innerHTML = text; // Set text first
-            renderMathInElement(preview, {
+        // Action Buttons
+        this.setupActionButtons();
+
+        // Utility Features
+        if (this.encySearch) this.encySearch.addEventListener("input", (e) => this.handleEncySearch(e));
+        if (this.rowsInput) this.rowsInput.addEventListener("input", () => this.makeGrid());
+        if (this.colsInput) this.colsInput.addEventListener("input", () => this.makeGrid());
+    },
+
+    setupActionButtons() {
+        const actions = {
+            "btn-clear": () => { if(confirm("Xoá hết code?")) { this.input.value = ""; this.render(); } },
+            "btn-copy": () => { navigator.clipboard.writeText(this.input.value); this.showToast("Đã sao chép mã nguồn!"); },
+            "btn-export": () => this.exportFile(),
+            "btn-convert": () => this.convertVNToLaTeX(),
+            "btn-conv-insert": () => this.insertToEditor(document.getElementById("conv-output").value),
+            "btn-generate-table": () => this.generateTableCode(),
+            "btn-table-insert": () => this.insertToEditor(document.getElementById("table-output-code").value)
+        };
+
+        Object.entries(actions).forEach(([id, fn]) => {
+            const btn = document.getElementById(id);
+            if (btn) btn.onclick = fn;
+        });
+    },
+
+    // --- Tab Management ---
+    switchTab(tabId) {
+        const activeClass = "active";
+        const currentTab = document.querySelector(".tab-content." + activeClass);
+        const targetTab = document.getElementById(`tab-${tabId}`);
+        
+        if (!targetTab || currentTab === targetTab) return;
+
+        // Update Navigation UI
+        document.querySelectorAll(".nav-btn, .dropdown-item").forEach(el => el.classList.remove(activeClass));
+        const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add(activeClass);
+            if (activeBtn.classList.contains("dropdown-item")) {
+                document.querySelector(".dropdown .nav-btn").classList.add(activeClass);
+            }
+        }
+
+        // Simple visibility toggle (CSS handles animation)
+        if (currentTab) currentTab.classList.remove(activeClass);
+        targetTab.classList.add(activeClass);
+    },
+
+    // --- Editor logic ---
+    handleInput() {
+        this.render();
+        this.handleAutocomplete();
+        localStorage.setItem("latex_draft_v2", this.input.value);
+    },
+
+    render() {
+        if (!this.preview || !this.input) return;
+        this.preview.innerHTML = this.input.value;
+        if (window.renderMathInElement) {
+            renderMathInElement(this.preview, {
                 delimiters: [
                     {left: '$$', right: '$$', display: true},
                     {left: '$', right: '$', display: false},
@@ -48,92 +115,206 @@ document.addEventListener("DOMContentLoaded", () => {
                 ],
                 throwOnError: false
             });
-        } catch (e) {
-            console.error("KaTeX Error:", e);
         }
-    }
+    },
 
-    function updateStatus() {
-        const text = input.value;
-        const lines = text ? text.split("\n").length : 0;
-        const words = text ? text.trim().split(/\s+/).length : 0;
-        const chars = text.length;
-        charCount.textContent = `${lines} dòng · ${words} từ · ${chars} ký tự`;
-    }
-
-    function saveDraft() {
-        localStorage.setItem("latex_helper_draft", input.value);
-    }
-
-    // Load Draft
-    const saved = localStorage.getItem("latex_helper_draft");
-    if (saved) {
-        input.value = saved;
-        renderPreview();
-        updateStatus();
-    }
-
-    // ── Button Actions ──
-    document.getElementById("btn-clear").addEventListener("click", () => {
-        if (confirm("Bạn có chắc muốn xoá hết không?")) {
-            input.value = "";
-            renderPreview();
-            updateStatus();
-            saveDraft();
+    loadDraft() {
+        if (!this.input) return;
+        const saved = localStorage.getItem("latex_draft_v2");
+        if (saved) {
+            this.input.value = saved;
+            this.render();
         }
-    });
+    },
 
-    document.getElementById("btn-copy").addEventListener("click", () => {
-        input.select();
-        document.execCommand("copy");
-        toast("Đã sao chép vào bộ nhớ tạm!");
-    });
+    handleAutocomplete() {
+        const val = this.input.value;
+        const pos = this.input.selectionStart;
+        const textBefore = val.substring(0, pos);
+        const lastSlash = textBefore.lastIndexOf("\\");
+        
+        this.autoList.innerHTML = "";
+        if (lastSlash === -1) return;
+        
+        const query = textBefore.substring(lastSlash).split(/\s/)[0];
+        if (!query || query.length < 2) return;
 
-    document.getElementById("btn-template").addEventListener("click", () => {
-        const template = `\\documentclass{article}\n\\usepackage[utf8]{vietnam}\n\\usepackage{amsmath, amssymb}\n\\usepackage{tikz}\n\n\\begin{document}\n\nXin chào mẹ! Chúc mẹ soạn thảo LaTeX thật vui.\n\n$ E = mc^2 $\n\n\\end{document}`;
-        input.value = template;
-        renderPreview();
-        updateStatus();
-        saveDraft();
-    });
+        const filtered = this.SUGGESTIONS.filter(s => s.startsWith(query));
+        filtered.forEach(s => {
+            const div = document.createElement("div");
+            div.className = "autocomplete-item";
+            div.textContent = s;
+            div.onclick = () => {
+                this.input.value = val.substring(0, lastSlash) + s + val.substring(pos);
+                this.autoList.innerHTML = "";
+                this.render();
+                this.input.focus();
+            };
+            this.autoList.appendChild(div);
+        });
+    },
 
-    document.getElementById("btn-export").addEventListener("click", () => {
-        const blob = new Blob([input.value], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
+    // --- Actions ---
+    exportFile() {
+        const blob = new Blob([this.input.value], {type: "text/plain"});
         const a = document.createElement("a");
-        a.href = url;
-        a.download = "tai-lieu.tex";
+        a.href = URL.createObjectURL(blob);
+        a.download = "tai_lieu_latex.tex";
         a.click();
-        URL.revokeObjectURL(url);
-    });
+        this.showToast("Đã tải tệp .tex!");
+    },
 
-    // Helper: Toast
-    function toast(msg) {
+    convertVNToLaTeX() {
+        if (window.performConversion) {
+            window.performConversion();
+        }
+    },
+
+    generateTableCode() {
+        const r = parseInt(this.rowsInput.value);
+        const c = parseInt(this.colsInput.value);
+        const useBooktabs = this.tableBooktabs.checked;
+        const useCenter = this.tableCenter.checked;
+        const caption = this.tableCaption.value.trim();
+        const label = this.tableLabel.value.trim();
+
+        let code = "";
+        
+        // Wrap in table environment if caption/label exists
+        if (caption || label) {
+            code += "\\begin{table}[ht!]\n";
+        }
+        
+        if (useCenter) code += "  \\centering\n";
+        
+        const colSpec = useBooktabs ? "c".repeat(c) : "|c".repeat(c) + "|";
+        code += `  \\begin{tabular}{${colSpec}}\n`;
+        
+        const topRule = useBooktabs ? "    \\toprule" : "    \\hline";
+        const midRule = useBooktabs ? "    \\midrule" : "    \\hline";
+        const bottomRule = useBooktabs ? "    \\bottomrule" : "    \\hline";
+        
+        code += `${topRule}\n`;
+        
+        for(let i=0; i<r; i++) {
+            let cells = [];
+            for(let j=0; j<c; j++) {
+                const el = document.querySelector(`input[data-r="${i}"][data-c="${j}"]`);
+                cells.push(el ? el.value : "");
+            }
+            code += "    " + cells.join(" & ") + " \\\\\n";
+            if (i === 0 && r > 1) {
+                code += `${midRule}\n`;
+            } else if (i < r - 1 && !useBooktabs) {
+                code += "    \\hline\n";
+            }
+        }
+        
+        code += `${bottomRule}\n`;
+        code += "  \\end{tabular}\n";
+        
+        if (caption) code += `  \\caption{${caption}}\n`;
+        if (label) code += `  \\label{${label}}\n`;
+        
+        if (caption || label) {
+            code += "\\end{table}";
+        } else if (useCenter && !caption && !label) {
+            // If just centering without table environment, wrap in center
+            code = `\\begin{center}\n${code.trim()}\n\\end{center}`;
+        }
+
+        document.getElementById("table-output-code").value = code.trim();
+        this.showToast("Đã tạo bảng Pro Max!");
+    },
+
+    makeGrid() {
+        if (!this.rowsInput || !this.colsInput) return;
+        const r = Math.min(this.rowsInput.value, 20);
+        const c = Math.min(this.colsInput.value, 10);
+        let html = '<table style="border-collapse:separate; border-spacing:8px; margin: 0 auto;">';
+        for(let i=0; i<r; i++) {
+            html += '<tr>';
+            for(let j=0; j<c; j++) {
+                html += `<td><input type="text" data-r="${i}" data-c="${j}" placeholder="${i+1},${j+1}" class="grid-input"></td>`;
+            }
+            html += '</tr>';
+        }
+        document.getElementById("table-grid-wrapper").innerHTML = html + '</table>';
+    },
+
+    // --- Encyclopedia ---
+    handleEncySearch(e) {
+        const q = e.target.value.toLowerCase();
+        this.renderEncy(this.COMMANDS.filter(c => 
+            c.name.toLowerCase().includes(q) || 
+            c.cmd.toLowerCase().includes(q) || 
+            c.category.toLowerCase().includes(q)
+        ));
+    },
+
+    renderEncy(data) {
+        const res = document.getElementById("encyclopedia-results");
+        if (!res) return;
+        res.innerHTML = "";
+        data.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "ency-card";
+            card.innerHTML = `
+                <span class="category-tag">${item.category}</span>
+                <h4>${item.name}</h4>
+                <code>${item.cmd}</code>
+                <button class="insert-btn" onclick="App.insertToEditor(\`${item.cmd.replace(/\\/g, '\\\\')}\`)">Chèn vào Editor</button>
+            `;
+            res.appendChild(card);
+        });
+    },
+
+    // --- Helpers ---
+    insertToEditor(t) {
+        const s = this.input.selectionStart;
+        const e = this.input.selectionEnd;
+        this.input.value = this.input.value.substring(0, s) + t + this.input.value.substring(e);
+        this.render();
+        this.input.focus();
+        this.input.selectionStart = s + t.length;
+        this.input.selectionEnd = s + t.length;
+        this.showToast("Đã chèn nội dung!");
+        this.switchTab("editor");
+    },
+
+    showToast(m) {
         const t = document.createElement("div");
         t.className = "toast";
-        t.textContent = msg;
+        t.textContent = m;
         document.body.appendChild(t);
-        setTimeout(() => t.classList.add("toast-show"), 10);
+        setTimeout(() => t.classList.add("show"), 10);
         setTimeout(() => {
-            t.classList.remove("toast-show");
-            setTimeout(() => t.remove(), 300);
-        }, 2000);
+            t.classList.remove("show");
+            setTimeout(() => t.remove(), 400);
+        }, 3000);
+    },
+
+    initExternalModules() {
+        if (window.initMCQWizard) window.initMCQWizard();
+        if (window.initDocumentSetup) window.initDocumentSetup();
+        if (window.initGeometryWizard) window.initGeometryWizard();
+    },
+
+    jumpToEncyclopedia(cat) {
+        this.switchTab("encyclopedia");
+        const filter = document.getElementById("category-filter");
+        if (filter) {
+            filter.value = cat;
+            // Dispatch event to trigger encyclopedia's filter logic
+            filter.dispatchEvent(new Event("change"));
+        }
     }
+};
 
-    window.toast = toast;
-    window.insertToEditor = (text) => {
-        const start = input.selectionStart;
-        const end = input.selectionEnd;
-        input.value = input.value.substring(0, start) + text + input.value.substring(end);
-        input.focus();
-        renderPreview();
-        updateStatus();
-        saveDraft();
-    };
+// Start the App
+document.addEventListener("DOMContentLoaded", () => App.init());
 
-    // ── Module Init ──
-    if (window.initAutocomplete) window.initAutocomplete(input);
-    if (window.initEncyclopedia) window.initEncyclopedia();
-    if (window.initConverter) window.initConverter();
-    if (window.initTableBuilder) window.initTableBuilder();
-});
+// Global exposed methods for HTML events
+window.insertToEditor = (t) => App.insertToEditor(t);
+window.showToast = (m) => App.showToast(m);
+window.App = App;

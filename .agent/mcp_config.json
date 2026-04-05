@@ -15,10 +15,14 @@
                 "shadcn@latest",
                 "mcp"
             ]
+        },
+        "openspace": {
+            "command": "C:\\Users\\Admin\\AppData\\Roaming\\Python\\Python314\\Scripts\\openspace-mcp.exe",
+            "env": {
+                "OPENSPACE_HOST_SKILL_DIRS": "c:\\Users\\Admin\\Documents\\latex\\.agent\\skills",
+                "OPENSPACE_WORKSPACE": "c:\\Users\\Admin\\Documents\\OpenSpace"
+            }
         }
-        //other mcp servers
     }
 }
-
-// setup mcp server in  ~/.gemini\antigravity\mcp_config.json
 

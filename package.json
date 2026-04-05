@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist && cp index.html dist/index.html && cp -r styles dist/ && cp -r scripts dist/ && cp -r data dist/ && echo 'Build complete'"
+    "dev": "npx -y serve .",
+    "build": "npx shx rm -rf dist && npx shx mkdir -p dist && npx shx cp index.html dist/index.html && npx shx cp -r styles dist/ && npx shx cp -r scripts dist/ && npx shx cp -r data dist/ && echo Build complete"
   }
 }

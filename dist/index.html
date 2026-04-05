@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaTeX Helper Pro Max</title>
+    <title>Trợ lý LaTeX - Công cụ soạn thảo chuyên nghiệp cho Giáo viên</title>
+    <meta name="description" content="Trợ lý LaTeX giúp giáo viên và học sinh soạn thảo đề thi, vẽ hình TikZ chuyên nghiệp và nhanh chóng với các mẫu chuẩn Bộ GD&ĐT.">
+    
+    <!-- Open Graph / SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Trợ lý LaTeX - Soạn thảo Đề thi & TikZ Chuyên nghiệp">
+    <meta property="og:description" content="Hỗ trợ soạn đề toán, lý, hóa với LaTeX và TikZ cực nhanh. Tích hợp thư viện mẫu đề thi chuẩn.">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/LaTeX_logo.svg/800px-LaTeX_logo.svg.png">
     
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -13,274 +20,58 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
-    <style>
-        /* --- Pro Max Design System (Liquid Glass) --- */
-        :root {
-            --color-primary: #1C1917;
-            --color-secondary: #44403C;
-            --color-cta: #CA8A04;
-            --color-background: #FAFAF9;
-            --color-text: #0C0A09;
-            --color-glass: rgba(255, 255, 255, 0.7);
-            --color-glass-dark: rgba(28, 25, 23, 0.8);
-            --border-glass: rgba(255, 255, 255, 0.2);
-            --shadow-premium: 0 10px 30px -10px rgba(0,0,0,0.1);
-            --transition-liquid: 400ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            font-family: 'Atkinson Hyperlegible', sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(202, 138, 4, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(68, 64, 60, 0.05) 0px, transparent 50%);
-        }
-
-        /* --- Components --- */
-        .glass-header {
-            position: fixed;
-            top: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 3rem);
-            max-width: 1200px;
-            background: var(--color-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            border-radius: 20px;
-            padding: 0.75rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: var(--shadow-premium);
-        }
-
-        .logo-area h1 {
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            letter-spacing: -0.02em;
-        }
-        
-        .logo-area p {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--color-secondary);
-            margin-top: -2px;
-        }
-
-        .main-nav { display: flex; gap: 0.5rem; }
-        
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: var(--color-secondary);
-            padding: 0.6rem 1rem;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: var(--transition-liquid);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-btn:hover { background: rgba(0,0,0,0.03); color: var(--color-primary); }
-        .nav-btn.active {
-            background: var(--color-primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .content-area {
-            flex: 1;
-            margin-top: 6rem;
-            padding: 2rem;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-
-        .tab-content { display: none; opacity: 0; transform: translateY(10px); transition: var(--transition-liquid); }
-        .tab-content.active { display: block; opacity: 1; transform: translateY(0); }
-
-        /* --- Editor Pro Max --- */
-        .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; height: calc(100vh - 10rem); }
-        
-        .pane {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: var(--shadow-premium);
-            transition: var(--transition-liquid);
-        }
-
-        .pane-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fafafa;
-        }
-
-        .pane-header h2 { font-family: 'Crimson Pro', serif; font-size: 1.25rem; font-weight: 600; }
-
-        .actions { display: flex; gap: 0.75rem; }
-        .actions button {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.1);
-            color: var(--color-secondary);
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-liquid);
-        }
-        .actions button:hover { border-color: var(--color-cta); color: var(--color-cta); transform: translateY(-1px); }
-
-        #latex-input {
-            width: 100%; height: 100%; background: #1C1917;
-            color: #E7E5E4; padding: 1.5rem; font-family: 'JetBrains Mono', monospace;
-            font-size: 1.05rem; line-height: 1.7; resize: none; outline: none; border: none;
-        }
-
-        .paper-view {
-            flex: 1;
-            background: white;
-            color: #1a1a1a;
-            padding: 3.5rem;
-            overflow-y: auto;
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.35rem;
-            line-height: 1.6;
-            position: relative;
-        }
-        
-        /* Premium Paper Texture */
-        .paper-view::before {
-            content: "";
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.4; pointer-events: none;
-        }
-
-        /* --- Encyclopedia Pro Max --- */
-        .encyclopedia-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem; margin-top: 2rem;
-        }
-        
-        .ency-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: var(--shadow-premium);
-            transition: var(--transition-liquid);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .ency-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.15); }
-        .ency-card::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--color-cta); opacity: 0; transition: 0.3s;
-        }
-        .ency-card:hover::after { opacity: 1; }
-
-        .ency-card h4 { font-family: 'Crimson Pro', serif; font-size: 1.2rem; margin-bottom: 0.75rem; }
-        .ency-card code {
-            display: block; background: #f5f5f4; padding: 0.75rem;
-            color: #92400e; font-family: 'JetBrains Mono', monospace;
-            border-radius: 10px; font-size: 0.9rem; margin-bottom: 1rem;
-        }
-
-        .insert-btn {
-            width: 100%; background: var(--color-primary); color: white;
-            padding: 0.6rem; border: none; border-radius: 10px;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .insert-btn:hover { background: var(--color-cta); }
-
-        /* --- Utilities --- */
-        .search-bar input {
-            width: 100%; padding: 1.25rem 2rem;
-            background: white; border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 20px; font-size: 1.1rem; box-shadow: var(--shadow-premium);
-            outline: none; transition: 0.3s;
-        }
-        .search-bar input:focus { border-color: var(--color-cta); box-shadow: 0 0 0 4px rgba(202, 138, 4, 0.1); }
-
-        .toast {
-            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: var(--color-primary); color: white;
-            padding: 1rem 2rem; border-radius: 50px; font-weight: 600;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 2000;
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-
-        .autocomplete-items {
-            position: absolute; bottom: 100%; left: 1rem; width: 280px;
-            background: white; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; margin-bottom: 0.5rem;
-        }
-        .autocomplete-item { padding: 0.75rem 1.25rem; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
-        .autocomplete-item:hover { background: #fafafa; color: var(--color-cta); }
-
-        /* SVG Icons */
-        .icon { width: 1.25rem; height: 1.25rem; }
-
-        @media (max-width: 1024px) {
-            .editor-layout { grid-template-columns: 1fr; height: auto; }
-            .glass-header { padding: 0.5rem 1rem; top: 0.5rem; width: calc(100% - 1rem); }
-            .content-area { margin-top: 5rem; padding: 1rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <header class="glass-header">
         <div class="logo-area">
             <h1>LaTeX Helper</h1>
-            <p>Premium Pro Max</p>
         </div>
         <nav class="main-nav">
             <button class="nav-btn active" data-tab="editor">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Editor
             </button>
-            <button class="nav-btn" data-tab="encyclopedia">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
-                Bách khoa
+
+            <!-- Dropdown Tiện ích -->
+            <div class="dropdown">
+                <button class="nav-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+                    Tiện ích
+                </button>
+                <div class="dropdown-content">
+                    <div class="dropdown-item" data-tab="encyclopedia">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
+                        Bách khoa
+                    </div>
+                    <div class="dropdown-item" data-tab="converter">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                        Chuyển đổi
+                    </div>
+                    <div class="dropdown-item" data-tab="table-builder">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                        Tạo Bảng
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-btn" data-tab="mcq-wizard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg>
+                Trắc nghiệm
             </button>
-            <button class="nav-btn" data-tab="converter">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
-                Chuyển đổi
+            <button class="nav-btn" data-tab="doc-setup">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Bố cục
             </button>
-            <button class="nav-btn" data-tab="table-builder">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-                Tạo Bảng
+            <button class="nav-btn" data-tab="geometry">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Hình học
             </button>
         </nav>
     </header>
 
     <main class="content-area">
+        <!-- Editor Tab -->
         <section id="tab-editor" class="tab-content active">
             <div class="editor-layout">
                 <div class="pane">
@@ -304,6 +95,7 @@
             </div>
         </section>
 
+        <!-- Encyclopedia Tab -->
         <section id="tab-encyclopedia" class="tab-content">
             <div class="search-bar">
                 <input type="text" id="encyclopedia-search" placeholder="🔍 Tìm kiếm lệnh, công thức, hình vẽ TikZ...">
@@ -311,222 +103,291 @@
             <div id="encyclopedia-results" class="encyclopedia-grid"></div>
         </section>
 
+        <!-- Converter Tab -->
         <section id="tab-converter" class="tab-content">
-            <div class="pane" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
-                <h2 style="font-family: 'Crimson Pro', serif; margin-bottom: 1.5rem;">Chuyển Tiếng Việt sang LaTeX</h2>
-                <textarea id="conv-input" style="width:100%; height: 120px; padding: 1.5rem; border-radius:15px; border:1px solid #ddd; margin-bottom: 1rem; font-family: inherit; font-size: 1.1rem;" placeholder="Nhập: phân số x trên y..."></textarea>
-                <button id="btn-convert" class="insert-btn" style="padding: 1rem; font-size: 1rem;">Chuyển đổi Ngay</button>
-                <div style="display:flex; gap: 1rem; margin-top: 1.5rem;">
-                    <textarea id="conv-output" readonly style="flex:1; min-height: 80px; padding:1rem; background:#f9f8f6; border:1px solid #eee; border-radius:10px; font-family: 'JetBrains Mono';"></textarea>
-                    <button id="btn-conv-insert" style="background:var(--color-cta); color:white; border:none; padding: 0 2rem; border-radius:10px; cursor:pointer; font-weight:600;">Chèn vào Editor</button>
+            <div class="pane converter-pane">
+                <h2 class="title-font">Chuyển Tiếng Việt sang LaTeX</h2>
+                <div class="form-group">
+                    <label for="conv-input">Yêu cầu ngôn ngữ tự nhiên:</label>
+                    <textarea id="conv-input" placeholder="Nhập: phân số x trên y..."></textarea>
+                </div>
+                <button id="btn-convert" class="insert-btn btn-primary">Chuyển đổi Ngay</button>
+                <div class="conversion-group">
+                    <div class="form-group" style="flex:1">
+                        <label for="conv-output">Kết quả LaTeX:</label>
+                        <textarea id="conv-output" readonly></textarea>
+                    </div>
+                    <button id="btn-conv-insert" class="action-btn">Chèn vào Editor</button>
                 </div>
             </div>
         </section>
 
+        <!-- Table Builder Tab -->
         <section id="tab-table-builder" class="tab-content">
-            <div class="pane" style="max-width: 900px; margin: 0 auto; padding: 2.5rem;">
-                <h2 style="font-family: 'Crimson Pro', serif; margin-bottom: 1.5rem;">Trình tạo Bảng Thông minh</h2>
-                <div style="display:flex; gap: 2rem; margin-bottom: 2rem; background: #f9f8f6; padding: 1.5rem; border-radius:15px;">
-                    <div>Hàng: <input type="number" id="table-rows" value="3" min="1" max="20" style="padding:0.5rem; border-radius:8px; border:1px solid #ddd; width:70px"></div>
-                    <div>Cột: <input type="number" id="table-cols" value="3" min="1" max="10" style="padding:0.5rem; border-radius:8px; border:1px solid #ddd; width:70px"></div>
+            <div class="pane table-builder-pane">
+                <h2 class="title-font">Trình tạo Bảng Pro Max</h2>
+                <div class="table-config-row">
+                    <div class="form-group"><label for="table-rows">Hàng:</label> <input type="number" id="table-rows" value="3" min="1" max="20"></div>
+                    <div class="form-group"><label for="table-cols">Cột:</label> <input type="number" id="table-cols" value="3" min="1" max="10"></div>
                 </div>
-                <div id="table-grid-wrapper" style="overflow-x:auto; margin-bottom: 2rem; padding: 1rem; border:1px dashed #ccc; border-radius:15px;"></div>
-                <button id="btn-generate-table" class="insert-btn" style="padding: 1rem;">Tạo Mã Nguồn Bảng</button>
-                <div style="display:flex; gap: 1rem; margin-top: 2rem;">
-                    <textarea id="table-output-code" readonly style="flex:1; min-height: 120px; padding:1rem; background:#f9f8f6; border:1px solid #eee; border-radius:10px; font-family: 'JetBrains Mono'; font-size: 0.9rem;"></textarea>
-                    <button id="btn-table-insert" style="background:var(--color-cta); color:white; border:none; padding: 0 2rem; border-radius:10px; cursor:pointer; font-weight:600;">Chèn vào Editor</button>
+
+                <div class="form-group" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+                    <label class="check-label">
+                        <input type="checkbox" id="table-booktabs"> Giao diện chuyên nghiệp (Booktabs)
+                    </label>
+                    <label class="check-label">
+                        <input type="checkbox" id="table-center" checked> Căn giữa trang
+                    </label>
+                </div>
+
+                <div class="header-inputs" style="margin-bottom: 2rem;">
+                    <div class="form-group">
+                        <label for="table-caption">Chú thích (Caption):</label>
+                        <input type="text" id="table-caption" placeholder="Ví dụ: Bảng thống kê kết quả...">
+                    </div>
+                    <div class="form-group">
+                        <label for="table-label">Nhãn (Label):</label>
+                        <input type="text" id="table-label" placeholder="Ví dụ: tab:ketqua">
+                    </div>
+                </div>
+
+                <div id="table-grid-wrapper" class="grid-wrapper"></div>
+                <button id="btn-generate-table" class="insert-btn">Tạo Mã Nguồn Bảng</button>
+                <div class="table-output-group">
+                    <div class="form-group" style="flex:1">
+                        <label for="table-output-code">Mã nguồn LaTeX:</label>
+                        <textarea id="table-output-code" readonly></textarea>
+                    </div>
+                    <button id="btn-table-insert" class="action-btn">Chèn vào Editor</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MCQ Wizard Tab -->
+        <section id="tab-mcq-wizard" class="tab-content">
+            <div class="mcq-wizard-container" style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="pane mcq-form" style="padding: 2rem;">
+                    <h2 style="font-family: 'Crimson Pro', serif; margin-bottom: 1.5rem;">Wizard Soạn Trắc nghiệm</h2>
+                    
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="mcq-question">Nội dung câu hỏi:</label>
+                        <textarea id="mcq-question" placeholder="Ví dụ: Cho hàm số $y=f(x)$..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="mcq-image">URL Hình ảnh (Tùy chọn):</label>
+                        <input type="text" id="mcq-image" placeholder="https://example.com/hinh1.png">
+                    </div>
+
+                    <div class="options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label for="mcq-opt-a">Phương án A:</label>
+                            <input type="text" id="mcq-opt-a" placeholder="Nhập phương án A">
+                        </div>
+                        <div class="form-group">
+                            <label for="mcq-opt-b">Phương án B:</label>
+                            <input type="text" id="mcq-opt-b" placeholder="Nhập phương án B">
+                        <div class="form-group">
+                            <label for="mcq-opt-c">Phương án C:</label>
+                            <input type="text" id="mcq-opt-c" placeholder="Nhập phương án C">
+                        </div>
+                        <div class="form-group">
+                            <label for="mcq-opt-d">Phương án D:</label>
+                            <input type="text" id="mcq-opt-d" placeholder="Nhập phương án D">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <div class="form-group">
+                            <label for="mcq-cols">Số cột:</label>
+                            <select id="mcq-cols">
+                                <option value="1">1 cột</option>
+                                <option value="2">2 cột</option>
+                                <option value="4" selected>4 cột</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mcq-correct">Đáp án:</label>
+                            <select id="mcq-correct">
+                                <option value="">Không</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mcq-marker">Kiểu đề mục:</label>
+                            <select id="mcq-marker">
+                                <option value="Alph">A, B, C...</option>
+                                <option value="alph">a, b, c...</option>
+                                <option value="arabic">1, 2, 3...</option>
+                                <option value="roman">i, ii, iii...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="btn-mcq-generate" class="insert-btn" style="padding: 1rem;">Sinh mã LaTeX</button>
+                </div>
+
+                <div class="pane mcq-preview-pane" style="padding: 2rem; background: #fff;">
+                    <h2 style="font-family: 'Crimson Pro', serif; margin-bottom: 1.5rem; color: #666;">Preview Câu hỏi</h2>
+                    <div id="mcq-live-preview" class="paper-view"></div>
+                    <div style="margin-top: 1.5rem;">
+                        <textarea id="mcq-output-code" readonly style="min-height: 100px;"></textarea>
+                        <button id="btn-mcq-insert" class="insert-btn" style="margin-top: 1rem; background: var(--color-cta);">Chèn vào Editor Chính</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Document Setup Tab (Enhanced with Templates) -->
+        <section id="tab-doc-setup" class="tab-content">
+            <div class="doc-setup-container">
+                <div class="doc-controls-sidebar">
+                    <div class="pane doc-form section-margin">
+                        <h2 class="title-font">Thư viện Mẫu Đề thi</h2>
+                        <div class="template-gallery">
+                            <button class="template-btn" onclick="window.insertTemplate('thpt-quoc-gia')">
+                                <strong>Đề thi THPT Quốc gia</strong>
+                                <span>Cấu chuẩn Bộ GD&ĐT, đầy đủ Preamble</span>
+                            </button>
+                            <button class="template-btn" onclick="window.insertTemplate('kiem-tra-1-tiet')">
+                                <strong>Đề Kiểm tra 1 tiết</strong>
+                                <span>Mẫu định kỳ gọn gàng, tiết kiệm giấy</span>
+                            </button>
+                            <button class="template-btn" onclick="window.insertTemplate('phieu-hoc-tap')">
+                                <strong>Phiếu học tập (Worksheet)</strong>
+                                <span>Layout dành cho bài tập ôn tập</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pane doc-form">
+                        <h3 class="title-font">Tùy chỉnh Header Nhánh</h3>
+                        
+                        <div class="header-inputs">
+                            <div class="form-group">
+                                <label for="doc-org-top">Sở / Phòng GD:</label>
+                                <input type="text" id="doc-org-top" value="SỞ GIÁO DỤC VÀ ĐÀO TẠO">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-org-name">Tên Trường:</label>
+                                <input type="text" id="doc-org-name" value="TRƯỜNG THPT CHUYÊN">
+                            </div>
+                        </div>
+
+                        <div class="header-inputs">
+                            <div class="form-group">
+                                <label for="doc-exam-name">Kỳ thi:</label>
+                                <input type="text" id="doc-exam-name" value="KỲ THI KHẢO SÁT CHẤT LƯỢNG">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-subject">Môn học:</label>
+                                <input type="text" id="doc-subject" value="Môn: TOÁN HỌC">
+                            </div>
+                        </div>
+
+                        <div class="header-inputs">
+                            <div class="form-group">
+                                <label for="doc-duration">Thời gian:</label>
+                                <input type="text" id="doc-duration" value="90 phút">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-id">Mã đề:</label>
+                                <input type="text" id="doc-id" value="101">
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <label class="check-label">
+                                <input type="checkbox" id="doc-ans-sheet" checked> Phiếu trả lời trắc nghiệm
+                            </label>
+                            <label class="check-label">
+                                <input type="checkbox" id="doc-full-preamble" checked> Bao bọc Preamble đầy đủ
+                            </label>
+                        </div>
+
+                        <div class="btn-group">
+                            <button id="btn-doc-generate" class="insert-btn">Chèn Header</button>
+                            <button id="btn-doc-wrap" class="insert-btn btn-primary">Bao bọc Code</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pane doc-preview-pane">
+                    <h2 class="preview-title">Preview Bố cục</h2>
+                    <div id="doc-live-preview" class="paper-view small-text"></div>
+                    <div class="code-output-area">
+                        <label for="doc-output-code">Mã nguồn LaTeX sinh ra:</label>
+                        <textarea id="doc-output-code" readonly class="mini-code"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geometry Wizard Tab -->
+        <section id="tab-geometry" class="tab-content">
+            <div class="geometry-container">
+                <div class="pane geo-controls">
+                    <h2 class="title-font">Geometry Wizard</h2>
+                    
+                    <div class="form-group">
+                        <label for="geo-type-main">Phân loại:</label>
+                        <select id="geo-type-main">
+                            <option value="2d">Hình học phẳng (2D)</option>
+                            <option value="3d">Hình học không gian (3D)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="geo-shape">Chọn hình cụ thể:</label>
+                        <select id="geo-shape"></select>
+                    </div>
+
+                    <div id="geo-params" class="geo-params-grid"></div>
+
+                    <div class="form-group" style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+                        <label class="check-label" style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+                            <input type="checkbox" id="geo-labels" checked> Hiện nhãn điểm (A, B, C...)
+                        </label>
+                        <div style="flex: 1;">
+                            <label for="geo-line-style">Kiểu đường:</label>
+                            <select id="geo-line-style">
+                                <option value="thick">Nét thanh (Dày)</option>
+                                <option value="very thick">Nét đậm</option>
+                                <option value="dashed">Đứt đoạn (Dashed)</option>
+                                <option value="dotted">Chấm bi (Dotted)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="btn-mcq-insert" class="insert-btn btn-primary" style="margin-top: 1.5rem;">Chèn vào Editor Chính</button>
+                    <p style="font-size: 0.8rem; color: var(--color-secondary); margin-top: 1rem; text-align: center;">
+                        Cần thêm mẫu? <a href="#" onclick="App.jumpToEncyclopedia('format'); return false;" style="color: var(--color-cta);">Xem Bách khoa (Định dạng)</a>
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--color-secondary); margin-top: 1rem; text-align: center;">
+                        Bạn muốn vẽ đồ thị Parabol? <a href="#" onclick="App.jumpToEncyclopedia('geometry'); return false;" style="color: var(--color-cta);">Xem Bách khoa (Hình học)</a>
+                    </p>
+                </div>
+
+                <div class="pane geo-preview-pane">
+                    <h2 class="preview-title">Preview SVG & TikZ Code</h2>
+                    <div id="geo-svg-preview"></div>
+                    <div class="code-output-area">
+                        <label for="geo-output-code">Mã nguồn TikZ sinh ra:</label>
+                        <textarea id="geo-output-code" readonly></textarea>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <script>
-        // --- Commands Data (Expanded for Pro Max) ---
-        const COMMANDS = [
-            { name: "Phân số", cmd: "\\frac{a}{b}", desc: "Tạo phân số", category: "Toán học" },
-            { name: "Căn bậc hai", cmd: "\\sqrt{x}", desc: "Căn bậc hai", category: "Toán học" },
-            { name: "Lũy thừa", cmd: "x^{n}", desc: "Mũ n", category: "Toán học" },
-            { name: "Tổng (Sigma)", cmd: "\\sum_{i=1}^{n}", desc: "Ký hiệu tổng", category: "Toán học" },
-            { name: "Tích phân", cmd: "\\int_{a}^{b} f(x) dx", desc: "Tích phân", category: "Toán học" },
-            { name: "Hệ tọa độ Oxy", cmd: "\\begin{tikzpicture}\n\\draw[->] (-1,0) -- (4,0) node[right] {$x$};\n\\draw[->] (0,-1) -- (0,4) node[above] {$y$};\n\\draw[step=1,gray!20,very thin] (-0.9,-0.9) grid (3.9,3.9);\n\\end{tikzpicture}", desc: "Mẫu vẽ Oxy chuyên nghiệp", category: "Hình học" },
-            { name: "Tam giác ABC", cmd: "\\begin{tikzpicture}\n\\coordinate (A) at (0,3);\n\\coordinate (B) at (-2,0);\n\\coordinate (C) at (2,0);\n\\draw (A) -- (B) -- (C) -- cycle;\n\\node[above] at (A) {A};\n\\node[left] at (B) {B};\n\\node[right] at (C) {C};\n\\end{tikzpicture}", desc: "Vẽ tam giác cơ bản", category: "Hình học" }
-        ];
-
-        // --- Main Controller ---
-        document.addEventListener("DOMContentLoaded", () => {
-            const input = document.getElementById("latex-input");
-            const preview = document.getElementById("latex-preview");
-            
-            // Tab Switch logic with animation
-            document.querySelectorAll(".nav-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const currentTab = document.querySelector(".tab-content.active");
-                    const targetTabId = `tab-${btn.dataset.tab}`;
-                    const targetTab = document.getElementById(targetTabId);
-
-                    document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
-                    btn.classList.add("active");
-
-                    currentTab.style.opacity = "0";
-                    setTimeout(() => {
-                        currentTab.classList.remove("active");
-                        targetTab.classList.add("active");
-                        setTimeout(() => targetTab.style.opacity = "1", 50);
-                    }, 200);
-                });
-            });
-
-            // Live Render with fallback
-            const render = () => {
-                preview.innerHTML = input.value;
-                if (window.renderMathInElement) {
-                    renderMathInElement(preview, {
-                        delimiters: [
-                            {left: '$$', right: '$$', display: true},
-                            {left: '$', right: '$', display: false},
-                            {left: '\\(', right: '\\)', display: false},
-                            {left: '\\[', right: '\\]', display: true}
-                        ],
-                        throwOnError: false
-                    });
-                }
-                localStorage.setItem("latex_draft", input.value);
-            };
-            input.addEventListener("input", render);
-
-            // Autocomplete (Upgraded UI)
-            const autoList = document.getElementById("autocomplete-list");
-            const suggs = ["\\frac{}{}", "\\sqrt{}", "\\alpha", "\\beta", "\\gamma", "\\delta", "\\sum", "\\int", "\\infty", "\\text{}", "\\begin{enumerate}", "\\item"];
-            input.addEventListener("input", (e) => {
-                const val = input.value;
-                const pos = input.selectionStart;
-                const textBefore = val.substring(0, pos);
-                const lastSlash = textBefore.lastIndexOf("\\");
-                
-                autoList.innerHTML = "";
-                if (lastSlash === -1) return;
-                
-                const query = textBefore.substring(lastSlash).split(/\s/)[0];
-                if (!query || query.length < 2) return;
-
-                const filtered = suggs.filter(s => s.startsWith(query));
-                filtered.forEach(s => {
-                    const div = document.createElement("div");
-                    div.className = "autocomplete-item";
-                    div.textContent = s;
-                    div.onclick = () => {
-                        input.value = val.substring(0, lastSlash) + s + val.substring(pos);
-                        autoList.innerHTML = "";
-                        render();
-                        input.focus();
-                    };
-                    autoList.appendChild(div);
-                });
-            });
-
-            // Local Logic: Export, Copy, Clear
-            document.getElementById("btn-clear").onclick = () => { if(confirm("Xoá hết code?")) { input.value = ""; render(); } };
-            document.getElementById("btn-copy").onclick = () => { navigator.clipboard.writeText(input.value); showToast("Đã sao chép mã nguồn!"); };
-            document.getElementById("btn-export").onclick = () => {
-                const blob = new Blob([input.value], {type: "text/plain"});
-                const a = document.createElement("a");
-                a.href = URL.createObjectURL(blob);
-                a.download = "tai_lieu_latex.tex";
-                a.click();
-                showToast("Đã chuẩn bị file .tex để tải về!");
-            };
-
-            // Converter Logic (Multilingual/Natural)
-            document.getElementById("btn-convert").onclick = () => {
-                let text = document.getElementById("conv-input").value;
-                const rules = [
-                    { pattern: /(?:phân số|phan so)\s+(.+)\s+(?:trên|tren)\s+(.+)/gi, replace: "\\frac{$1}{$2}" },
-                    { pattern: /(?:căn bậc hai|can bac hai)\s*(?:của)?\s*(.+)/gi, replace: "\\sqrt{$1}" },
-                    { pattern: /(?:mũ|mu)\s+(.+)/gi, replace: "^{$1}" }
-                ];
-                rules.forEach(r => text = text.replace(r.pattern, r.replace));
-                document.getElementById("conv-output").value = `$ ${text} $`;
-                showToast("Đã chuyển đổi!");
-            };
-            document.getElementById("btn-conv-insert").onclick = () => window.insertToEditor(document.getElementById("conv-output").value);
-
-            // Table Builder Logic (Upgraded UI)
-            const makeGrid = () => {
-                const r = Math.min(document.getElementById("table-rows").value, 20);
-                const c = Math.min(document.getElementById("table-cols").value, 10);
-                let html = '<table style="border-collapse:separate; border-spacing:4px; margin: 0 auto;">';
-                for(let i=0; i<r; i++) {
-                    html += '<tr>';
-                    for(let j=0; j<c; j++) html += `<td><input type="text" data-r="${i}" data-c="${j}" placeholder="Ô ${i+1},${j+1}" style="width:70px; padding:6px; border:1px solid #ddd; border-radius:6px; font-size:0.8rem;"></td>`;
-                    html += '</tr>';
-                }
-                document.getElementById("table-grid-wrapper").innerHTML = html + '</table>';
-            };
-            document.getElementById("table-rows").oninput = makeGrid;
-            document.getElementById("table-cols").oninput = makeGrid;
-            document.getElementById("btn-generate-table").onclick = () => {
-                const r = document.getElementById("table-rows").value;
-                const c = document.getElementById("table-cols").value;
-                let code = `\\begin{center}\n\\begin{tabular}{${"|c".repeat(c)}|}\n\\hline\n`;
-                for(let i=0; i<r; i++) {
-                    let cells = [];
-                    for(let j=0; j<c; j++) cells.push(document.querySelector(`input[data-r="${i}"][data-c="${j}"]`).value || "");
-                    code += cells.join(" & ") + " \\\\ \\hline\n";
-                }
-                code += "\\end{tabular}\n\\end{center}";
-                document.getElementById("table-output-code").value = code;
-                showToast("Đã tạo bảng!");
-            };
-            document.getElementById("btn-table-insert").onclick = () => window.insertToEditor(document.getElementById("table-output-code").value);
-
-            // Encyclopedia logic
-            const renderEncy = (data) => {
-                const res = document.getElementById("encyclopedia-results");
-                res.innerHTML = "";
-                data.forEach(item => {
-                    const card = document.createElement("div");
-                    card.className = "ency-card";
-                    card.innerHTML = `
-                        <span style="font-size:0.7rem; color:var(--color-cta); font-weight:700; text-transform:uppercase;">${item.category}</span>
-                        <h4>${item.name}</h4>
-                        <code>${item.cmd}</code>
-                        <button class="insert-btn" onclick="window.insertToEditor(\`${item.cmd.replace(/\\/g, '\\\\')}\`)">Chèn vào Editor</button>
-                    `;
-                    res.appendChild(card);
-                });
-            };
-            renderEncy(COMMANDS);
-            document.getElementById("encyclopedia-search").oninput = (e) => {
-                const q = e.target.value.toLowerCase();
-                renderEncy(COMMANDS.filter(c => c.name.toLowerCase().includes(q) || c.cmd.toLowerCase().includes(q) || c.category.toLowerCase().includes(q)));
-            };
-
-            window.insertToEditor = (t) => {
-                const s = input.selectionStart;
-                const e = input.selectionEnd;
-                input.value = input.value.substring(0, s) + t + input.value.substring(e);
-                render();
-                input.focus();
-                input.selectionStart = s + t.length;
-                input.selectionEnd = s + t.length;
-                showToast("Đã chèn lệnh thành công!");
-                // Auto switch back to editor tab for UX
-                document.querySelector('[data-tab="editor"]').click();
-            };
-
-            function showToast(m) {
-                const t = document.createElement("div");
-                t.className = "toast"; t.textContent = m;
-                document.body.appendChild(t);
-                setTimeout(() => t.classList.add("show"), 10);
-                setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, 3000);
-            }
-
-            // Initialization
-            const saved = localStorage.getItem("latex_draft");
-            if (saved) { input.value = saved; render(); }
-            makeGrid();
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="scripts/templates.js"></script>
+    <script src="scripts/mcq-wizard.js"></script>
+    <script src="scripts/document-setup.js"></script>
+    <script src="scripts/geometry-wizard.js"></script>
+    <script src="scripts/app.js"></script>
 </body>
 </html>

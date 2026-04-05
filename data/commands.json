@@ -2,9 +2,18 @@
     { "name": "Phân số", "cmd": "\\frac{a}{b}", "desc": "Tạo phân số với tử a và mẫu b.", "category": "math" },
     { "name": "Căn bậc hai", "cmd": "\\sqrt{x}", "desc": "Căn bậc hai của x.", "category": "math" },
     { "name": "Lũy thừa", "cmd": "x^{n}", "desc": "x mũ n.", "category": "math" },
-    { "name": "Tích phân", "cmd": "\\int_{a}^{b} f(x) dx", "desc": "Tích phân xác định.", "category": "math" },
-    { "name": "Hệ trục tọa độ (Oxy)", "cmd": "\\begin{tikzpicture}\n[scale=1,>=stealth]\n\\draw[->] (-1,0) -- (4,0) node[below] {$x$};\n\\draw[->] (0,-1) -- (0,4) node[left] {$y$};\n\\node at (0,0) [below left] {$O$};\n\\end{tikzpicture}", "desc": "Mẫu vẽ hệ trục tọa độ Oxy dùng TikZ.", "category": "geometry" },
-    { "name": "Vẽ đường tròn", "cmd": "\\draw (0,0) circle (2cm);", "desc": "Vẽ hình tròn tâm (0,0) bán kính 2cm.", "category": "geometry" },
-    { "name": "Vẽ tam giác", "cmd": "\\draw (0,0) -- (2,0) -- (1,2) -- cycle;", "desc": "Vẽ tam giác bằng các đỉnh.", "category": "geometry" },
-    { "name": "Môi trường Equation", "cmd": "\\begin{equation}\n  E = mc^2\n\\end{equation}", "desc": "Môi trường gõ công thức toán có đánh số hiệu.", "category": "format" }
+    { "name": "Tích phân", "cmd": "\\int_{a}^{b} f(x) dx", "desc": "Tích phân xác định từ a đến b.", "category": "math" },
+    { "name": "Ma trận 2x2", "cmd": "\\begin{pmatrix}\n  a & b \\\\\n  c & d\n\\end{pmatrix}", "desc": "Ma trận 2 hàng 2 cột với dấu ngoặc tròn.", "category": "math" },
+    { "name": "Hệ phương trình", "cmd": "\\begin{cases}\n  2x + y = 5 \\\\\n  x - y = 1\n\\end{cases}", "desc": "Hệ phương trình sử dụng môi trường cases.", "category": "math" },
+    { "name": "Logarit", "cmd": "\\log_{a} b = c", "desc": "Công thức logarit cơ bản.", "category": "math" },
+    { "name": "Giới hạn (Limit)", "cmd": "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1", "desc": "Ký hiệu giới hạn tiến tới vô cùng hoặc số.", "category": "math" },
+
+    { "name": "Hệ trục Oxy", "cmd": "\\begin{tikzpicture}[scale=1,>=stealth]\n  \\draw[->] (-1,0) -- (4,0) node[below] {$x$};\n  \\draw[->] (0,-1) -- (0,4) node[left] {$y$};\n  \\draw[step=1,gray!20,very thin] (-0.9,-0.9) grid (3.9,3.9);\n  \\node at (0,0) [below left] {$O$};\n\\end{tikzpicture}", "desc": "Hệ trục tọa độ chuyên nghiệp có lưới mờ.", "category": "geometry" },
+    { "name": "Đồ thị Parabol", "cmd": "\\begin{tikzpicture}[scale=0.8]\n  \\draw[->] (-3,0) -- (3,0) node[right] {$x$};\n  \\draw[->] (0,-1) -- (0,5) node[above] {$y$};\n  \\draw[very thick, color=blue, domain=-2:2] plot (\\x, {\\x^2});\n  \\node at (0,0) [below left] {$O$};\n\\end{tikzpicture}", "desc": "Vẽ đồ thị hàm số y = x^2 bằng TikZ.", "category": "geometry" },
+    { "name": "Hình nón (3D)", "cmd": "\\begin{tikzpicture}[scale=1]\n  \\draw (0,0) ellipse (1.5 and 0.5);\n  \\draw (-1.5,0) -- (0,3) -- (1.5,0);\n  \\draw[dashed] (0,0) -- (0,3) node[midway, right] {$h$};\n  \\draw[dashed] (0,0) -- (1.5,0) node[midway, below] {$r$};\n\\end{tikzpicture}", "desc": "Mẫu vẽ hình nón (Cone) đơn giản.", "category": "geometry" },
+    { "name": "Hình trụ (3D)", "cmd": "\\begin{tikzpicture}[scale=1]\n  \\draw (0,0) ellipse (1 and 0.3);\n  \\draw (0,2) ellipse (1 and 0.3);\n  \\draw (-1,0) -- (-1,2) (1,0) -- (1,2);\n\\end{tikzpicture}", "desc": "Mẫu vẽ hình trụ (Cylinder).", "category": "geometry" },
+
+    { "name": "Mục lục", "cmd": "\\tableofcontents", "desc": "Tự động tạo mục lục từ các lệnh section.", "category": "format" },
+    { "name": "Danh mục tài liệu", "cmd": "\\begin{thebibliography}{9}\n  \\bibitem{label}\n  Tên tác giả, \\textit{Tên sách}, Nhà xuất bản, Năm.\n\\end{thebibliography}", "desc": "Môi trường quản lý trích dẫn tài liệu tham khảo.", "category": "format" },
+    { "name": "Chèn ảnh", "cmd": "\\begin{figure}[ht!]\n  \\centering\n  \\includegraphics[width=0.5\\textwidth]{image_name}\n  \\caption{Chú thích ảnh}\n  \\label{fig:my_label}\n\\end{figure}", "desc": "Môi trường chèn hình ảnh có chú thích và nhãn.", "category": "format" }
 ]
