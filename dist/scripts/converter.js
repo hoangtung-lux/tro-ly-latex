@@ -84,7 +84,7 @@ window.initConverter = function() {
         btnInsert.addEventListener("click", () => {
             if (output.value && window.insertToEditor) {
                 window.insertToEditor(output.value);
-                if (window.toast) window.toast("Đã chèn vào Editor!");
+                if (window.showToast) window.showToast("Đã chèn vào Editor!");
             }
         });
     }

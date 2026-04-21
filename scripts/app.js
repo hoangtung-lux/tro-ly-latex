@@ -31,15 +31,26 @@ const App = {
         this.preview = document.getElementById("latex-preview");
         this.autoList = document.getElementById("autocomplete-list");
         this.encySearch = document.getElementById("encyclopedia-search");
+        
+        // Table Builder elements
         this.rowsInput = document.getElementById("table-rows");
         this.colsInput = document.getElementById("table-cols");
+        this.tableBooktabs = document.getElementById("table-booktabs");
+        this.tableCenter = document.getElementById("table-center");
+        this.tableCaption = document.getElementById("table-caption");
+        this.tableLabel = document.getElementById("table-label");
     },
 
     bindEvents() {
-        // Tab Navigation
         document.querySelectorAll("[data-tab]").forEach(el => {
-            el.addEventListener("click", () => this.switchTab(el.dataset.tab));
+            el.addEventListener("click", () => {
+                this.switchTab(el.dataset.tab);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         });
+
+        // Global Hotkeys
+        window.addEventListener("keydown", (e) => this.handleGlobalHotkeys(e));
 
         // Editor Logic
         if (this.input) {
@@ -57,10 +68,9 @@ const App = {
 
     setupActionButtons() {
         const actions = {
-            "btn-clear": () => { if(confirm("Xoá hết code?")) { this.input.value = ""; this.render(); } },
+            "btn-clear": () => { if(window.confirm("Xoá hết code?")) { this.input.value = ""; this.render(); } },
             "btn-copy": () => { navigator.clipboard.writeText(this.input.value); this.showToast("Đã sao chép mã nguồn!"); },
             "btn-export": () => this.exportFile(),
-            "btn-convert": () => this.convertVNToLaTeX(),
             "btn-conv-insert": () => this.insertToEditor(document.getElementById("conv-output").value),
             "btn-generate-table": () => this.generateTableCode(),
             "btn-table-insert": () => this.insertToEditor(document.getElementById("table-output-code").value)
@@ -134,12 +144,36 @@ const App = {
         const lastSlash = textBefore.lastIndexOf("\\");
         
         this.autoList.innerHTML = "";
-        if (lastSlash === -1) return;
+        if (lastSlash === -1) {
+            this.autoList.style.display = "none";
+            return;
+        }
         
         const query = textBefore.substring(lastSlash).split(/\s/)[0];
-        if (!query || query.length < 2) return;
+        if (!query || query.length < 2) {
+            this.autoList.style.display = "none";
+            return;
+        }
 
         const filtered = this.SUGGESTIONS.filter(s => s.startsWith(query));
+        if (filtered.length === 0) {
+            this.autoList.style.display = "none";
+            return;
+        }
+
+        this.autoList.style.display = "block";
+        
+        const lines = textBefore.split("\n");
+        const currentLineIndex = lines.length;
+        const charInLine = lines[lines.length - 1].length;
+        
+        const topPos = Math.min(currentLineIndex * 28 + 20, this.input.offsetHeight - 100);
+        const leftPos = Math.min(charInLine * 9 + 20, this.input.offsetWidth - 200);
+        
+        this.autoList.style.top = `${topPos}px`;
+        this.autoList.style.left = `${leftPos}px`;
+        this.autoList.style.bottom = "auto";
+
         filtered.forEach(s => {
             const div = document.createElement("div");
             div.className = "autocomplete-item";
@@ -147,11 +181,24 @@ const App = {
             div.onclick = () => {
                 this.input.value = val.substring(0, lastSlash) + s + val.substring(pos);
                 this.autoList.innerHTML = "";
+                this.autoList.style.display = "none";
                 this.render();
                 this.input.focus();
             };
             this.autoList.appendChild(div);
         });
+    },
+
+    handleGlobalHotkeys(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            this.exportFile();
+        }
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            this.render();
+            this.showToast("Đã làm mới Preview!");
+        }
     },
 
     // --- Actions ---
@@ -273,11 +320,17 @@ const App = {
     insertToEditor(t) {
         const s = this.input.selectionStart;
         const e = this.input.selectionEnd;
-        this.input.value = this.input.value.substring(0, s) + t + this.input.value.substring(e);
+        
+        // Thêm khoảng trắng để tránh chen chúc (chen nhau)
+        const prefix = (s > 0 && this.input.value[s-1] !== "\n") ? "\n\n" : "";
+        const suffix = "\n";
+        const content = prefix + t + suffix;
+        
+        this.input.value = this.input.value.substring(0, s) + content + this.input.value.substring(e);
         this.render();
         this.input.focus();
-        this.input.selectionStart = s + t.length;
-        this.input.selectionEnd = s + t.length;
+        this.input.selectionStart = s + content.length;
+        this.input.selectionEnd = s + content.length;
         this.showToast("Đã chèn nội dung!");
         this.switchTab("editor");
     },

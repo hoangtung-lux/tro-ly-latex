@@ -142,7 +142,7 @@ body {
 /* --- Content Area --- */
 .content-area {
     flex: 1;
-    margin-top: 1rem;
+    margin-top: 5rem; /* Tăng margin để không bị Header đè lên */
     padding: 2rem;
     overflow-y: auto;
     scroll-behavior: smooth;
@@ -228,6 +228,8 @@ body {
     overflow-y: auto;
     line-height: 1.8;
     position: relative;
+    white-space: pre-wrap; /* Ngăn code bị tràn ngang */
+    word-break: break-all;
 }
 
 .paper-view:empty::before {
